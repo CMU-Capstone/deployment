@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/github_scanner" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/slack_analyser_springboot" vcs="Git" />
+  </component>
+</project>

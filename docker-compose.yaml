@@ -1,0 +1,62 @@
+version: '3'
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    hostname: mongo
+
+  gitscanner:
+    build: github_scanner/ .
+    environment:
+      - SERVER_PORT=8082
+#     You can add the expected mongo destination server and port here if using external mongo server
+#      - spring.data.mongodb.host=mongo
+#      - spring.data.mongodb.username=mongoadmin
+#      - spring.data.mongodb.password=secret
+#      - spring.data.mongodb.authentication-database
+    depends_on:
+      - mongo
+    ports:
+      - 8082:8082
+    links:
+      - mongo
+    hostname:
+      gitscanner
+      
+  slackscanner:
+    build: slack_analyser_springboot/ . 
+    environment:
+      - SERVER_PORT=8081
+#     You can add the expected mongo destination server and port here if using external mongo server
+#     - spring.data.mongodb.host
+#     - spring.data.mongodb.username
+#     - spring.data.mongodb.password
+#     - spring.data.mongodb.authentication-database
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    links:
+      - mongo
+    hostname:
+      slackscanner
+
+  demo:
+    build: demo/ .
+    environment:
+      - SERVER_PORT=8080
+      - CONNECTION_GIT_URL=http://gitscanner:8082/github_scanner/api
+      - CONNECTION_SLACK_URL=http://slackscanner:8081/slack_analyser/api
+    depends_on:
+      - slackscanner
+      - gitscanner
+    ports:
+      - 8080:8080
+    hostname:
+      demo
